@@ -1,4 +1,4 @@
-AC_INIT([highlyadvanced], [0.41], [nenolod+highlyadvanced@sacredspiral.co.uk])
+AC_INIT([highlyadvanced], [3.1.1], [unmacaque@gmail.com])
 AC_PREREQ([2.59])
 
 AC_CANONICAL_HOST
@@ -11,7 +11,7 @@ AC_PROG_CXX
 AC_C_BIGENDIAN
 AC_C_INLINE
 
-CFLAGS="-DLINUX -I./VBA -DVERSION_STR=\\\"0.41\\\" -DHA_VERSION_STR=\\\"0.11\\\""
+CFLAGS="-DLINUX -I./VBA -DVERSION_STR=\\\"3.1.1\\\" -DHA_VERSION_STR=\\\"3.1.1\\\""
 LDFLAGS="-lz"
 
 interpolation=yes
@@ -50,11 +50,11 @@ fi
 
 CFLAGS="$CFLAGS -DC_CORE"
 
-PKG_CHECK_MODULES(AUDACIOUS, [audacious >= 1.3.99],
+PKG_CHECK_MODULES(AUDACIOUS, [audacious >= 3.0],
 	[
 	 AUDACIOUS_PLUGIN_DIR=`pkg-config audacious --variable=input_plugin_dir`
 	 AC_SUBST(AUDACIOUS_PLUGIN_DIR)
-	], [AC_MSG_ERROR([Audacious 1.4 required.])])
+	], [AC_MSG_ERROR([Audacious 3.0 required.])])
 
 BUILDSYS_SHARED_LIB
 BUILDSYS_PROG_IMPLIB
