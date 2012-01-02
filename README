@@ -1,0 +1,41 @@
+*************** Overview
+This is a port of the gsf input plugin for winamp, Highly Advanced,
+to Audacious.
+
+Highly advanced was written by CaitSith2 and Zoopd. It is available
+at GSF Central:
+http://www.caitsith2.com/gsf/
+
+Parts of the UNIX port were done by Raphael Assenat, and can be found there:
+http://projects.raphnet.net/
+
+Audacious port was done by William Pitcock. It is available here:
+http://people.atheme.org/~nenolod/audacious/plugins
+
+***************** Building
+Start by running the configure script:
+# ./configure
+
+You may pass some options to configure:
+
+--disable-interpolation
+	The highly advanced website metions that the interpolation 
+	code may be the cause of some crashing issues some people have experienced.
+	This options allows you to disable the interpolation code.
+
+--enables-optimisations
+	This options enables compiler optimisation. Some versions of gcc seem
+	to enter an infinite memory consuming loop while compiling the emulation
+	engine (due to extreme inlining), so optimisations are forcefully disabled.
+
+# make all install
+
+On a non GNU system, you should use:
+# gmake all install
+
+Enjoy!
+
+**************** Music
+GSF tunes are available from GSF Central:
+http://www.caitsith2.com/gsf/
+
