@@ -16,20 +16,7 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#ifndef LINUX
-#include <memory.h>
-#include <windows.h>
-#endif
-
-#ifdef LINUX
-#include <string.h>
-#endif
-
-#ifndef LINUX
-#include "in2.h"
-#else
-//#include "..\in2.h"
-#endif
+#include <cstring>
 
 #include "GBA.h"
 #include "Globals.h"

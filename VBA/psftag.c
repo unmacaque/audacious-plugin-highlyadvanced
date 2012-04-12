@@ -16,8 +16,6 @@
 
 #ifdef LINUX
 #include "../gsf.h"
-#else
-#include <windows.h>
 #endif
 /*
 void DisplayError (char * Message, ...) {

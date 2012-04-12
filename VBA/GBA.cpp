@@ -576,7 +576,7 @@ inline int CPUUpdateTicks()
 
 /*static bool CPUReadState(gzFile gzFile)
 {
-  /*int version = utilReadInt(gzFile);
+  int version = utilReadInt(gzFile);
 
   if(version > SAVE_GAME_VERSION || version < SAVE_GAME_VERSION_1) {
     systemMessage(MSG_UNSUPPORTED_VBA_SGM,
@@ -695,9 +695,9 @@ inline int CPUUpdateTicks()
   systemSaveUpdateCounter = SYSTEM_SAVE_NOT_UPDATED;
   
   return true;  
-}*/
+}
 
-/*bool CPUReadMemState(char *memory, int available)
+bool CPUReadMemState(char *memory, int available)
 {
   gzFile gzFile = utilMemGzOpen(memory, available, "r");
 
@@ -707,9 +707,9 @@ inline int CPUUpdateTicks()
 
   return res;
 	return true;
-}*/
+}
 
-/*bool CPUReadState(const char * file)
+bool CPUReadState(const char * file)
 {
   gzFile gzFile = utilGzOpen(file, "rb");
 
@@ -722,9 +722,9 @@ inline int CPUUpdateTicks()
 
   return res;
 	return true;
-}*/
+}
 
-/*bool CPUReadGSASnapshot(const char *fileName)
+bool CPUReadGSASnapshot(const char *fileName)
 {
   int i;
   FILE *file = fopen(fileName, "rb");
@@ -789,7 +789,6 @@ inline int CPUUpdateTicks()
   return true;
 }
 
-/*
 bool CPUImportEepromFile(const char *fileName)
 {
   FILE *file = fopen(fileName, "rb");
@@ -830,11 +829,11 @@ bool CPUImportEepromFile(const char *fileName)
     return false;
   fclose(file);
   return true;
-}*/
+}
 
-/*bool CPUReadBatteryFile(const char *fileName)
+bool CPUReadBatteryFile(const char *fileName)
 {
-  /*FILE *file = fopen(fileName, "rb");
+  FILE *file = fopen(fileName, "rb");
     
   if(!file)
     return false;
@@ -868,9 +867,9 @@ bool CPUImportEepromFile(const char *fileName)
   }
   fclose(file);
   return true;
-}*/
+}
 
-/*bool CPUIsZipFile(const char * file)
+bool CPUIsZipFile(const char * file)
 {
   if(strlen(file) > 4) {
     char * p = strrchr(file,'.');

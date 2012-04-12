@@ -3,20 +3,11 @@
 #include "./VBA/Sound.h"
 #include "./VBA/Util.h"
 #include "./VBA/GBA.h"
-
-
 #include "./VBA/unzip.h"
 
 #include <string.h>
-
-#ifndef LINUX
-#include <windows.h>
-#endif
 #include <stdio.h>
-
-#ifdef LINUX
 #include <stdarg.h>
-#endif
 
 #include "gsf.h"
 
@@ -83,8 +74,8 @@ void DisplayError (char * Message, ...) {
 	va_start( ap, Message );
 	vsprintf( Msg, Message, ap );
 	va_end( ap );
-#ifndef LINUX
-	MessageBox(NULL,Msg,"Error",MB_OK|MB_ICONERROR|MB_SETFOREGROUND);
+#ifdef WIN32
+        //MessageBox(NULL,Msg,"Error",MB_OK|MB_ICONERROR|MB_SETFOREGROUND);
 #else
 	fprintf(stderr, "%s\n", Message);
 #endif

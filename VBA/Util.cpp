@@ -549,8 +549,6 @@ extern "C"
 
 #ifdef LINUX
 	#include "../gsf.h"
-#else
-	#include <windows.h>
 #endif
 
 /*void DisplayError (char * Message, ...) {
@@ -759,7 +757,7 @@ GSF_FILE decompressGSF(const char * file, int libnum=1)
 	  }
 	
 #else
-	  if(!stricmp(gsffile.psftag,"[TAG]"))
+	  if(!strcmp(gsffile.psftag,"[TAG]"))
 	  {
 	    fread(gsffile.psftag,1,50000,f);
 	  }
@@ -1484,7 +1482,7 @@ void utilWriteData(gzFile gzFile, variable_desc *data)
 
 gzFile utilGzOpen(const char *file, const char *mode)
 {
-  utilGzWriteFunc = (int (ZEXPORT *)(void *,void * const, unsigned int))gzwrite;
+  utilGzWriteFunc = (int (ZEXPORT *)(gzFile ,void * const, unsigned int))gzwrite;
   utilGzReadFunc = gzread;
   utilGzCloseFunc = gzclose;
 

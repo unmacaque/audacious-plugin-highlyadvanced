@@ -1,4 +1,3 @@
-#ifdef LINUX
 typedef char BOOL;
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
@@ -7,10 +6,6 @@ typedef unsigned int DWORD;
 #ifndef TRUE
 # define TRUE    1
 # define FALSE   0
-#endif
-
-#else
-# include <windows.h>
 #endif
 
 #ifndef _GSF_C
