@@ -7,9 +7,10 @@
  *
  */
 
+#include <glib.h>
+
 #include <audacious/misc.h>
 #include <audacious/plugin.h>
-#include <libaudcore/tuple_formatter.h>
 
 #include "VBA/psftag.h"
 #include "gsf.h"
@@ -43,8 +44,6 @@ static gchar *lastfn;
 
 GThread *gsf_emulthread;
 
-static int g_must_exit = 0;
-
 int LengthFromString(const char * timestring);
 int VolumeFromString(const char * volumestring);
 
@@ -57,222 +56,214 @@ gboolean gsf_play_loop(const gchar *filename);
 
 Tuple *gsf_get_song_tuple(const gchar *filename, VFSFile *file)
 {
-	char tag[50001];
-	char tmp_str[256];
-	const gchar *fn;
+  char tag[50001];
+  char tmp_str[256];
+  const gchar *fn;
 
-	Tuple *ti;
-	
-	fn = g_filename_from_uri(filename, NULL, NULL);
+  Tuple *ti;
 
-	ti = tuple_new_from_filename(fn);
+  fn = g_filename_from_uri(filename, NULL, NULL);
 
-	psftag_readfromfile((void*)tag, fn);
+  ti = tuple_new_from_filename(fn);
 
-	if (!psftag_getvar(tag, "title", tmp_str, sizeof(tmp_str)-1)) {
-		tuple_associate_string(ti, FIELD_TITLE, NULL, tmp_str);
-	}
-		
-	if (!psftag_getvar(tag, "artist", tmp_str, sizeof(tmp_str)-1)) {
-		tuple_associate_string(ti, FIELD_ARTIST, NULL, tmp_str);
-	}
-		
-	if (!psftag_getvar(tag, "game", tmp_str, sizeof(tmp_str)-1)) {
-		tuple_associate_string(ti, FIELD_ALBUM, NULL, tmp_str);
-	}
-		
-	if (!psftag_getvar(tag, "year", tmp_str, sizeof(tmp_str)-1)) {
-		tuple_associate_string(ti, FIELD_DATE, NULL, tmp_str);
-	}
+  psftag_readfromfile((void*)tag, fn);
 
-	if (!psftag_getvar(tag, "copyright", tmp_str, sizeof(tmp_str)-1)) {
-		tuple_associate_string(ti, FIELD_COPYRIGHT, NULL, tmp_str);
-	}
-		
-	if (!psftag_getvar(tag, "gsfby", tmp_str, sizeof(tmp_str)-1)) {
-		tuple_associate_string(ti, -1, "gsfby", tmp_str);
-	}
-		
-	if (!psftag_getvar(tag, "tagger", tmp_str, sizeof(tmp_str)-1)) {
-		tuple_associate_string(ti, -1, "tagger", tmp_str);
-	}
-		
-	if (!psftag_raw_getvar(tag, "length", tmp_str, sizeof(tmp_str)-1)) {
-		tuple_associate_int(ti, FIELD_LENGTH, NULL, LengthFromString(tmp_str) + FadeLength);
-	}
+  if (!psftag_getvar(tag, "title", tmp_str, sizeof(tmp_str)-1)) {
+      tuple_set_str(ti, FIELD_TITLE, NULL, tmp_str);
+  }
 
-	if (!psftag_getvar(tag, "comment", tmp_str, sizeof(tmp_str)-1)) {
-		tuple_associate_string(ti, FIELD_COMMENT, NULL, tmp_str);
-	}
+  if (!psftag_getvar(tag, "artist", tmp_str, sizeof(tmp_str)-1)) {
+      tuple_set_str(ti, FIELD_ARTIST, NULL, tmp_str);
+  }
 
-	tuple_associate_string(ti, FIELD_CODEC, NULL, "GameBoy Advanced Audio (GSF)");
-	tuple_associate_string(ti, FIELD_QUALITY, NULL, "sequenced");
+  if (!psftag_getvar(tag, "game", tmp_str, sizeof(tmp_str)-1)) {
+      tuple_set_str(ti, FIELD_ALBUM, NULL, tmp_str);
+  }
 
-	return ti;
+  if (!psftag_getvar(tag, "year", tmp_str, sizeof(tmp_str)-1)) {
+      tuple_set_str(ti, FIELD_DATE, NULL, tmp_str);
+  }
+
+  if (!psftag_getvar(tag, "copyright", tmp_str, sizeof(tmp_str)-1)) {
+      tuple_set_str(ti, FIELD_COPYRIGHT, NULL, tmp_str);
+  }
+
+  if (!psftag_getvar(tag, "gsfby", tmp_str, sizeof(tmp_str)-1)) {
+      tuple_set_str(ti, -1, "gsfby", tmp_str);
+  }
+
+  if (!psftag_getvar(tag, "tagger", tmp_str, sizeof(tmp_str)-1)) {
+      tuple_set_str(ti, -1, "tagger", tmp_str);
+  }
+
+  if (!psftag_raw_getvar(tag, "length", tmp_str, sizeof(tmp_str)-1)) {
+      tuple_set_int(ti, FIELD_LENGTH, NULL, LengthFromString(tmp_str) + FadeLength);
+  }
+
+  if (!psftag_getvar(tag, "comment", tmp_str, sizeof(tmp_str)-1)) {
+      tuple_set_str(ti, FIELD_COMMENT, NULL, tmp_str);
+  }
+
+  tuple_set_str(ti, FIELD_CODEC, NULL, "GameBoy Advanced Audio (GSF)");
+  tuple_set_str(ti, FIELD_QUALITY, NULL, "sequenced");
+
+  return ti;
 }
 
 static InputPlayback *_playback = NULL;
 
 void end_of_track(void)
 {
-	stop_flag = TRUE;
+  stop_flag = TRUE;
 }
-	
+
 void writeSound(void)
 {
-	int tmp;
-	int ret = soundBufferLen;
-	static int countdown = 20;
+  int ret = soundBufferLen;
+  static int countdown = 20;
 
-	decode_pos_ms += (ret/(2*sndNumChannels) * 1000) / (float)sndSamplesPerSec;
+  decode_pos_ms += (ret/(2*sndNumChannels) * 1000) / (float)sndSamplesPerSec;
 
-	_playback->output->write_audio (soundFinalWave, soundBufferLen);
+  _playback->output->write_audio (soundFinalWave, soundBufferLen);
 
-	if (--countdown == 0)
-	{
-		countdown = 20;
-	}
+  if (--countdown == 0)
+    {
+      countdown = 20;
+    }
 
-	/* is seek request complete? (-2) */
-	if (seek_needed == -2)
-	{
-		_playback->output->flush(seek_needed);
-		seek_needed = -1;
-	}
+  /* is seek request complete? (-2) */
+  if (seek_needed == -2)
+    {
+      _playback->output->flush(seek_needed);
+      seek_needed = -1;
+    }
 
-	if (lastfn != NULL && (seek_needed != -1))	//if a seek is initiated
-	{
-	        if (seek_needed < decode_pos_ms)	//if we are asked to seek backwards.  we have to start from the beginning
-		{
-			GSFClose();
-			GSFRun(lastfn);
-			decode_pos_ms = 0;
-		}
-	}
+  if (lastfn != NULL && (seek_needed != -1))	//if a seek is initiated
+    {
+      if (seek_needed < decode_pos_ms)	//if we are asked to seek backwards.  we have to start from the beginning
+        {
+          GSFClose();
+          GSFRun(lastfn);
+          decode_pos_ms = 0;
+        }
+    }
 }
 
 static gboolean gsf_play(InputPlayback * playback, const gchar * filename, VFSFile * file, gint start_time, gint stop_time, gboolean pause)
 {
-	int r, tmp, fi, random=0;
-	char Buffer[1024];
-	char length_str[256], fade_str[256], volume[256], title_str[256];
-	char tmp_str[256];
-	void *buffer;
-	gint64 size;
+  soundLowPass = 0;
+  soundEcho = 0;
+  soundQuality = 0;
 
-	soundLowPass = 0;
-	soundEcho = 0;
-	soundQuality = 0;
+  DetectSilence=1;
+  silencelength=5;
+  IgnoreTrackLength=0;
+  DefaultLength=150000;
+  TrailingSilence=1000;
+  playforever=0;
 
-	DetectSilence=1;
-	silencelength=5;	
-	IgnoreTrackLength=0;
-	DefaultLength=150000;
-	TrailingSilence=1000;
-	playforever=0;
-
-	_playback = playback;
-	return gsf_play_loop(filename);
+  _playback = playback;
+  return gsf_play_loop(filename);
 }
 
 gboolean gsf_play_loop(const gchar * filename)
 {
-	int r;
-	const gchar *fn;
-	
-	fn = g_filename_from_uri(filename, NULL, NULL);
+  int r;
+  const gchar *fn;
 
-	Tuple *ti = gsf_get_song_tuple(filename, NULL);
-	
-	r = GSFRun(fn);
-	if (!r)
-		return -1;
+  fn = g_filename_from_uri(filename, NULL, NULL);
 
-	lastfn = g_strdup(fn);
+  Tuple *ti = gsf_get_song_tuple(filename, NULL);
 
-	_playback->output->open_audio(FMT_S16_LE, sndSamplesPerSec, sndNumChannels);
-	
-	gint length = tuple_get_int(ti, FIELD_LENGTH, NULL);
+  r = GSFRun(fn);
+  if (!r)
+    return -1;
 
-	_playback->set_params(_playback, sndSamplesPerSec*2*2*8, sndSamplesPerSec, sndNumChannels);
+  lastfn = g_strdup(fn);
 
-	decode_pos_ms = 0;
-	seek_needed = -1;
-	TrailingSilence=1000;
+  _playback->output->open_audio(FMT_S16_LE, sndSamplesPerSec, sndNumChannels);
 
-	stop_flag = FALSE;
-	_playback->set_pb_ready(_playback);
+  //gint length = tuple_get_int(ti, FIELD_LENGTH, NULL);
 
-	while(! stop_flag)
-	  EmulationLoop();
+  _playback->set_params(_playback, sndSamplesPerSec*2*2*8, sndSamplesPerSec, sndNumChannels);
 
-	GSFClose();
+  decode_pos_ms = 0;
+  seek_needed = -1;
+  TrailingSilence=1000;
 
-	stop_flag = TRUE;
-	_playback->output->close_audio();
-	g_free(lastfn);
-	lastfn = NULL;
+  stop_flag = FALSE;
+  _playback->set_pb_ready(_playback);
 
-	return 0;
+  while(! stop_flag)
+    EmulationLoop();
+
+  GSFClose();
+
+  stop_flag = TRUE;
+  _playback->output->close_audio();
+  g_free(lastfn);
+  lastfn = NULL;
+
+  return 0;
 }
 
 static void gsf_stop(InputPlayback *playback)
 {
-	stop_flag = TRUE;
-	
-	playback->output->abort_write ();
+  stop_flag = TRUE;
 
-	if (lastfn != NULL)
-	{
-		lastfn = NULL;
-	}
+  playback->output->abort_write ();
+
+  if (lastfn != NULL)
+    {
+      lastfn = NULL;
+    }
 }
 
 static void gsf_pause(InputPlayback *playback, gboolean pause)
 {
-	if (!stop_flag)
-		playback->output->pause(pause);
+  if (!stop_flag)
+    playback->output->pause(pause);
 }
 
 static int gsf_is_our_fd(const gchar *filename, VFSFile *file)
 {
-        void *magic;
-        const gchar *tmps;
+  void *magic;
+  const gchar *tmps;
 
-        // Filter out gsflib [we use them, but we can't play them]
-        static const gchar *teststr = "gsflib";
-        if (strlen(teststr) < strlen(filename))
-	{
-                tmps = filename + strlen(filename);
-                tmps -= strlen(teststr);
-                if (!strcasecmp(tmps, teststr))
-                        return 0;
-        }
-
-	//vfs_fread(magic,1,4,file);
-
-	if (!memcmp(magic,"PSF\"",4))
-		return 1;
-
+  // Filter out gsflib [we use them, but we can't play them]
+  static const gchar *teststr = "gsflib";
+  if (strlen(teststr) < strlen(filename))
+    {
+      tmps = filename + strlen(filename);
+      tmps -= strlen(teststr);
+      if (!strcasecmp(tmps, teststr))
         return 0;
+    }
+
+  //vfs_fread(magic,1,4,file);
+
+  if (!memcmp(magic,"PSF\"",4))
+    return 1;
+
+  return 0;
 }
 
 static void gsf_mseek(InputPlayback *playback, gint time)
 {
-	seek_needed = time;
+  seek_needed = time;
 }
 
 static const gchar *gsf_fmts[] = { "gsf", "minigsf", NULL };
 
 AUD_INPUT_PLUGIN
 (
-        .name = "Highly Advanced for Audacious",
-        .play = gsf_play,
-        .stop = gsf_stop,
-        .pause = gsf_pause,
-        .mseek = gsf_mseek,
-        .probe_for_tuple = gsf_get_song_tuple,
-        .is_our_file_from_vfs = gsf_is_our_fd,
-        .extensions = gsf_fmts,
+    .name = "Highly Advanced for Audacious",
+    .play = gsf_play,
+    .stop = gsf_stop,
+    .pause = gsf_pause,
+    .mseek = gsf_mseek,
+    .probe_for_tuple = gsf_get_song_tuple,
+    .is_our_file_from_vfs = gsf_is_our_fd,
+    .extensions = gsf_fmts,
 )
 
