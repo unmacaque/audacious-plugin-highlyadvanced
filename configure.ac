@@ -1,4 +1,4 @@
-AC_INIT([highlyadvanced], [3.1.1], [unmacaque@gmail.com])
+AC_INIT([highlyadvanced], [3.2], [unmacaque@gmail.com])
 AC_PREREQ([2.59])
 
 AC_CANONICAL_HOST
@@ -11,7 +11,7 @@ AC_PROG_CXX
 AC_C_BIGENDIAN
 AC_C_INLINE
 
-CFLAGS="-DLINUX -I./VBA -DVERSION_STR=\\\"3.1.1\\\" -DHA_VERSION_STR=\\\"3.1.1\\\""
+CFLAGS="-DLINUX -I./VBA -DVERSION_STR=\\\"3.2\\\" -DHA_VERSION_STR=\\\"3.2\\\""
 LDFLAGS="-lz"
 
 interpolation=yes
@@ -50,14 +50,23 @@ fi
 
 CFLAGS="$CFLAGS -DC_CORE"
 
-PKG_CHECK_MODULES(AUDACIOUS, [audacious >= 3.0],
+PKG_CHECK_MODULES(GLIB2, [glib-2.0 >= 2.16],
+	[
+	 CFLAGS="$CFLAGS `pkg-config --cflags glib-2.0`"
+	 CPPFLAGS="$CPPFLAGS `pkg-config --cflags glib-2.0`"
+	 AC_SUBST(GLIB_CFLAGS)
+	], [AC_MSG_ERROR([glib2 >= 2.16 required.])])
+
+
+PKG_CHECK_MODULES(AUDACIOUS, [audacious >= 3.2],
 	[
 	 AUDACIOUS_PLUGIN_DIR=`pkg-config audacious --variable=input_plugin_dir`
 	 AC_SUBST(AUDACIOUS_PLUGIN_DIR)
-	], [AC_MSG_ERROR([Audacious 3.0 required.])])
+	], [AC_MSG_ERROR([Audacious 3.2 required.])])
 
 BUILDSYS_SHARED_LIB
 BUILDSYS_PROG_IMPLIB
+BUILDSYS_TOUCH_DEPS
 
 AC_CONFIG_HEADER(config.h)
 AC_OUTPUT(buildsys.mk extra.mk)
