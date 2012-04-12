@@ -12,6 +12,10 @@ http://projects.raphnet.net/
 Audacious port was done by William Pitcock. It is available here:
 http://people.atheme.org/~nenolod/audacious/plugins
 
+The port of highlyadvanced to Audacious 3 was done by unmacaque. The
+sources are available here:
+https://github.com/unmacaque/audacious-plugin-highlyadvanced
+
 ***************** Building
 Start by running the configure script:
 # ./configure
