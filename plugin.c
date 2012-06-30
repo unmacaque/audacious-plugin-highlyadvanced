@@ -8,6 +8,7 @@
  */
 
 #include <glib.h>
+#include <string.h>
 
 #include <audacious/misc.h>
 #include <audacious/plugin.h>
@@ -86,10 +87,6 @@ Tuple *gsf_get_song_tuple(const gchar *filename, VFSFile *file)
 
   if (!psftag_getvar(tag, "copyright", tmp_str, sizeof(tmp_str)-1)) {
       tuple_set_str(ti, FIELD_COPYRIGHT, NULL, tmp_str);
-  }
-
-  if (!psftag_getvar(tag, "gsfby", tmp_str, sizeof(tmp_str)-1)) {
-      tuple_set_str(ti, -1, "gsfby", tmp_str);
   }
 
   if (!psftag_getvar(tag, "tagger", tmp_str, sizeof(tmp_str)-1)) {
@@ -172,8 +169,6 @@ gboolean gsf_play_loop(const gchar * filename)
   const gchar *fn;
 
   fn = g_filename_from_uri(filename, NULL, NULL);
-
-  Tuple *ti = gsf_get_song_tuple(filename, NULL);
 
   r = GSFRun(fn);
   if (!r)
