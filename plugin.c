@@ -89,10 +89,6 @@ Tuple *gsf_get_song_tuple(const gchar *filename, VFSFile *file)
       tuple_set_str(ti, FIELD_COPYRIGHT, NULL, tmp_str);
   }
 
-  if (!psftag_getvar(tag, "gsfby", tmp_str, sizeof(tmp_str)-1)) {
-      tuple_set_str(ti, -1, "gsfby", tmp_str);
-  }
-
   if (!psftag_getvar(tag, "tagger", tmp_str, sizeof(tmp_str)-1)) {
       tuple_set_str(ti, -1, "tagger", tmp_str);
   }
