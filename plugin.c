@@ -8,11 +8,12 @@
  */
 
 #include <glib.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <audacious/misc.h>
 #include <audacious/plugin.h>
 
-#include "VBA/psftag.h"
 #include "gsf.h"
 
 int defvolume=1000;
@@ -173,8 +174,6 @@ gboolean gsf_play_loop(const gchar * filename)
 
   fn = g_filename_from_uri(filename, NULL, NULL);
 
-  Tuple *ti = gsf_get_song_tuple(filename, NULL);
-
   r = GSFRun(fn);
   if (!r)
     return -1;
@@ -200,7 +199,7 @@ gboolean gsf_play_loop(const gchar * filename)
   GSFClose();
 
   stop_flag = TRUE;
-  _playback->output->close_audio();
+  _playback->output->abort_write();
   g_free(lastfn);
   lastfn = NULL;
 

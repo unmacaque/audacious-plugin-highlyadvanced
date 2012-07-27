@@ -1,4 +1,4 @@
-AC_INIT([highlyadvanced], [3.2], [unmacaque@gmail.com])
+AC_INIT([highlyadvanced], [3.3], [unmacaque@gmail.com])
 AC_PREREQ([2.59])
 
 AC_CANONICAL_HOST
@@ -11,7 +11,7 @@ AC_PROG_CXX
 AC_C_BIGENDIAN
 AC_C_INLINE
 
-CFLAGS="-DLINUX -I./VBA -DVERSION_STR=\\\"3.2\\\" -DHA_VERSION_STR=\\\"3.2\\\""
+CFLAGS="-DLINUX -I./VBA -DVERSION_STR=\\\"3.3\\\" -DHA_VERSION_STR=\\\"3.3\\\""
 LDFLAGS="-lz"
 
 interpolation=yes
@@ -58,11 +58,11 @@ PKG_CHECK_MODULES(GLIB2, [glib-2.0 >= 2.16],
 	], [AC_MSG_ERROR([glib2 >= 2.16 required.])])
 
 
-PKG_CHECK_MODULES(AUDACIOUS, [audacious >= 3.2],
+PKG_CHECK_MODULES(AUDACIOUS, [audacious >= 3.3],
 	[
 	 AUDACIOUS_PLUGIN_DIR=`pkg-config audacious --variable=input_plugin_dir`
 	 AC_SUBST(AUDACIOUS_PLUGIN_DIR)
-	], [AC_MSG_ERROR([Audacious 3.2 required.])])
+	], [AC_MSG_ERROR([Audacious 3.3 required.])])
 
 BUILDSYS_SHARED_LIB
 BUILDSYS_PROG_IMPLIB
