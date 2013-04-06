@@ -196,7 +196,9 @@ gboolean gsf_play_loop(const gchar * filename)
 
   stop_flag = TRUE;
   _playback->output->abort_write();
+#if _AUD_PLUGIN_VERSION_MIN < 40
   _playback->output->close_audio(); //Fixes issue when switching tracks manually.
+#endif
   g_free(lastfn);
   lastfn = NULL;
 
