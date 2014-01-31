@@ -15,6 +15,9 @@
 
 #define ZLIB_INTERNAL
 #include "zlib.h"
+#ifndef OF
+#define OF(x) x
+#endif
 
 #ifdef STDC
 #  ifndef _WIN32_WCE

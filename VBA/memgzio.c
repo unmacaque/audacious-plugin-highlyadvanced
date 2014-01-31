@@ -29,6 +29,9 @@
 #ifndef Z_PRINTF_BUFSIZE
 #  define Z_PRINTF_BUFSIZE 4096
 #endif
+#ifndef OF
+#define OF(x) x
+#endif
 
 #define ALLOC(size) malloc(size)
 #define TRYFREE(p) {if (p) free(p);}
